@@ -1,8 +1,11 @@
-import OpenAI from 'openai';
+import OpenAI, { APIError } from 'openai';
 import { OpenAIStream, StreamingTextResponse } from 'ai';
+import { Output } from '@/types/output.type';
+import { NextResponse } from 'next/server';
+import { OPENAI_ERRORS } from '@/lib/openai-errors';
 
 const USER_PROMPT = 'Generate code for a web page that looks exactly like  this';
-const SYSTEM_PROMPT = `You are an expert in designing user interfaces with html and Tailwindcss
+const HTML_SYSTEM_PROMPT = `You are an expert in designing user interfaces with html and Tailwindcss
 You take screenshots of a reference web page from the user, and then build single page apps 
 using Tailwind, HTML and JS.
 
@@ -66,34 +69,45 @@ const openai = new OpenAI({
 export const runtime = 'edge';
 
 export async function POST(req: Request) {
-  const { url, img } = await req.json();
+  const { url, img, stack } = await req.json();
 
+  const SYSTEM_PROMPT = stack === Output.html_tailwind ? HTML_SYSTEM_PROMPT : REACT_SYSTEM_PROMPT;
   const imageUrl = url ?? img;
 
-  const response = await openai.chat.completions.create({
-    model: 'gpt-4-vision-preview',
-    stream: true,
-    max_tokens: 4096,
-    messages: [
-      {
-        role: 'system',
-        content: SYSTEM_PROMPT,
-      },
-      {
-        role: 'user',
-        content: [
-          {
-            type: 'text',
-            text: USER_PROMPT,
-          },
-          {
-            type: 'image_url',
-            image_url: { url: imageUrl, detail: 'high' },
-          },
-        ],
-      },
-    ],
-  });
-  const stream = OpenAIStream(response);
-  return new StreamingTextResponse(stream);
+  try {
+    const response = await openai.chat.completions.create({
+      model: 'gpt-4-vision-preview',
+      stream: true,
+      max_tokens: 4096,
+      messages: [
+        {
+          role: 'system',
+          content: SYSTEM_PROMPT,
+        },
+        {
+          role: 'user',
+          content: [
+            {
+              type: 'text',
+              text: USER_PROMPT,
+            },
+            {
+              type: 'image_url',
+              image_url: { url: imageUrl, detail: 'high' },
+            },
+          ],
+        },
+      ],
+    });
+    const stream = OpenAIStream(response);
+    return new StreamingTextResponse(stream);
+  } catch (error) {
+    if (error instanceof APIError) {
+      const { status } = error;
+      const errorResponse = {
+        message: OPENAI_ERRORS[status!],
+      };
+      return NextResponse.json(errorResponse, { status: status });
+    }
+  }
 }
