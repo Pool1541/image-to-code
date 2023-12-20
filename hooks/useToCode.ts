@@ -1,23 +1,13 @@
 import { useState } from 'react';
 import useStack from './useStack';
-import { Output, OutputType } from '@/types/output.type';
 import { streamReader, toBase64 } from '@/lib/utils';
 import { toast } from 'sonner';
+import { STEPS } from '@/constants/steps';
 
 export function useToCode() {
-  const STEPS = {
-    INITIAL: 'INITIAL',
-    LOADING: 'LOADING',
-    PREVIEW: 'PREVIEW',
-    ERROR: 'ERROR',
-  };
-
   const [result, setResult] = useState('');
   const [step, setStep] = useState(STEPS.INITIAL);
-  // const [stack, setStack] = useState<OutputType>(Output.html_tailwind);
-  const { stack, setStack } = useStack();
-
-  console.log(stack);
+  const { stack } = useStack();
 
   async function transformToCode(body: string) {
     try {
@@ -59,5 +49,5 @@ export function useToCode() {
   const [background, ...rest] = result.split('|||');
   const html = rest.pop() || '';
 
-  return { step, background, html, tranformImageToCode, transformUrlToCode, setStack, STEPS };
+  return { step, background, html, tranformImageToCode, transformUrlToCode };
 }
