@@ -1,6 +1,6 @@
 import Aside from '@/components/layout/aside';
 import Navbar from '@/components/layout/navbar';
-import MainContent from './main-content';
+import MainContent from '../components/home/main-content';
 
 export default function Home() {
   return (

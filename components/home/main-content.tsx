@@ -5,7 +5,6 @@ import { useToCode } from '@/hooks/useToCode';
 import { DragAndDrop } from './draganddrop';
 import Form from './form';
 import CodeDisplay from './code-display';
-import { Suspense } from 'react';
 
 export default function MainContent() {
   const { STEPS, background, html, step, tranformImageToCode, transformUrlToCode } = useToCode();
