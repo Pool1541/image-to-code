@@ -5,11 +5,12 @@ import { useToCode } from '@/hooks/useToCode';
 import { DragAndDrop } from './draganddrop';
 import Form from './form';
 import CodeDisplay from './code-display';
+import { STEPS } from '@/constants/steps';
 
 export default function MainContent() {
-  const { STEPS, background, html, step, tranformImageToCode, transformUrlToCode } = useToCode();
+  const { background, html, step, tranformImageToCode, transformUrlToCode } = useToCode();
   return (
-    <section className='max-w-7xl w-full min-h-screen mx-auto mt-10 flex justify-center'>
+    <section className='max-w-7xl w-full mx-auto mt-10 flex justify-center'>
       {step === STEPS.LOADING && <Loader />}
       {step === STEPS.INITIAL && (
         <div className='flex flex-col gap-4 w-full'>
