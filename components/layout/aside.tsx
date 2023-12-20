@@ -1,3 +1,5 @@
+'use client';
+
 import {
   Select,
   SelectContent,
@@ -5,13 +7,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import useStack from '@/hooks/useStack';
 import { Output, OutputType } from '@/types/output.type';
 
-interface AsideProps {
-  handleChange: (value: OutputType) => void;
-}
-
-export default function Aside({ handleChange }: AsideProps) {
+export default function Aside() {
+  const { setStack } = useStack();
   return (
     <aside className='hidden lg:flex flex-col gap-10 sm:min-h-screen px-6 py-8 bg-gray-900'>
       <header className='text-center'>
@@ -20,7 +20,7 @@ export default function Aside({ handleChange }: AsideProps) {
       </header>
       <section>
         <label className='text-sm pl-1'>Selecciona el stack de salida :</label>
-        <Select defaultValue={Output.html_tailwind} onValueChange={handleChange}>
+        <Select defaultValue={Output.html_tailwind} onValueChange={(value) => setStack(value)}>
           <SelectTrigger className='w-full mt-2'>
             <SelectValue placeholder='Selecciona' />
           </SelectTrigger>
