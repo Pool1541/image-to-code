@@ -3,6 +3,7 @@ import { OpenAIStream, StreamingTextResponse } from 'ai';
 import { Output } from '@/types/output.type';
 import { NextResponse } from 'next/server';
 import { OPENAI_ERRORS } from '@/lib/openai-errors';
+import { FreeTrial } from '@/repository';
 
 const USER_PROMPT = 'Generate code for a web page that looks exactly like  this';
 const HTML_SYSTEM_PROMPT = `You are an expert in designing user interfaces with html and Tailwindcss
@@ -62,19 +63,32 @@ Return first the background hexadecimals, put a ||| separator, and then all the 
 Do not include markdown "\`\`\`" or "\`\`\`html" at the start or end.
 Make sure you have the correct code.`;
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+const openai = new OpenAI();
 
-export const runtime = 'edge';
+// export const runtime = 'edge';
+
+async function setApiKey({ uid, userApiKey }: { uid: string; userApiKey: string }) {
+  const freeFrialFromDB = await FreeTrial.findById(uid);
+  if (!freeFrialFromDB && userApiKey) return userApiKey;
+  else if (!userApiKey && !userApiKey) {
+    throw new Error(
+      `La prueba gratis finalizó.
+      Puedes ingresar una api key de openai en la configuración para seguir usando la app.`
+    );
+  }
+  return process.env.OPENAI_API_KEY || '';
+}
 
 export async function POST(req: Request) {
-  const { url, img, stack } = await req.json();
+  const { url, img, stack, uid, userApiKey } = await req.json();
 
   const SYSTEM_PROMPT = stack === Output.html_tailwind ? HTML_SYSTEM_PROMPT : REACT_SYSTEM_PROMPT;
   const imageUrl = url ?? img;
 
   try {
+    const apiKey = await setApiKey({ uid, userApiKey });
+    openai.apiKey = apiKey;
+
     const response = await openai.chat.completions.create({
       model: 'gpt-4-vision-preview',
       stream: true,
@@ -102,12 +116,20 @@ export async function POST(req: Request) {
     const stream = OpenAIStream(response);
     return new StreamingTextResponse(stream);
   } catch (error) {
+    console.log(error);
     if (error instanceof APIError) {
       const { status } = error;
       const errorResponse = {
         message: OPENAI_ERRORS[status!],
       };
       return NextResponse.json(errorResponse, { status: status });
+    }
+
+    if (error instanceof Error) {
+      const errorResponse = {
+        message: error.message,
+      };
+      return NextResponse.json(errorResponse, { status: 401 });
     }
   }
 }
