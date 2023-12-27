@@ -3,5 +3,5 @@ interface OPENAI_ERROR_INTERFACE {
 }
 
 export const OPENAI_ERRORS: OPENAI_ERROR_INTERFACE = {
-  401: 'La api key está vacia o es inválida',
+  401: 'Ingresa una api key válida en la configuración.',
 };
