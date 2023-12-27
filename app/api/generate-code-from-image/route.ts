@@ -70,7 +70,7 @@ const openai = new OpenAI();
 async function setApiKey({ uid, userApiKey }: { uid: string; userApiKey: string }) {
   const freeFrialFromDB = await FreeTrial.findById(uid);
   if (!freeFrialFromDB && userApiKey) return userApiKey;
-  else if (!userApiKey && !userApiKey) {
+  else if (!freeFrialFromDB && !userApiKey) {
     throw new Error(
       `La prueba gratis finalizó.
       Puedes ingresar una api key de openai en la configuración para seguir usando la app.`
