@@ -20,7 +20,9 @@ export default function Aside() {
       </header>
       <section>
         <label className='text-sm pl-1'>Selecciona el stack de salida :</label>
-        <Select defaultValue={Output.html_tailwind} onValueChange={(value) => setStack(value)}>
+        <Select
+          defaultValue={Output.html_tailwind}
+          onValueChange={(value) => setStack(value as OutputType)}>
           <SelectTrigger className='w-full mt-2'>
             <SelectValue placeholder='Selecciona' />
           </SelectTrigger>
