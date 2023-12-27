@@ -1,5 +1,6 @@
 'use client';
 
+import ConfigProvider from '@/contexts/config-context';
 import StackProvider from '@/contexts/stack-context';
 import { SessionProvider } from 'next-auth/react';
 
@@ -10,7 +11,9 @@ interface Props {
 export default function Providers({ children }: Props) {
   return (
     <SessionProvider>
-      <StackProvider>{children}</StackProvider>
+      <StackProvider>
+        <ConfigProvider>{children}</ConfigProvider>
+      </StackProvider>
     </SessionProvider>
   );
 }
