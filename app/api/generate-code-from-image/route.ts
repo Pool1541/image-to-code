@@ -68,14 +68,21 @@ const openai = new OpenAI();
 // export const runtime = 'edge';
 
 async function setApiKey({ uid, userApiKey }: { uid: string; userApiKey: string }) {
+  // Si no existe el uid pero si la apikey del usuario se retorna la apikey del usuario
+  if (!uid && userApiKey) return userApiKey;
+  if (!uid && !userApiKey) throw new Error('Inicia sesión o agrega un api key de openai iniciar.');
+  // Se busca el free-trial del usuario (Solo si está activo)
   const freeFrialFromDB = await FreeTrial.findById(uid);
+  // Si el free-trial no está activo pero si hay una apikey del usuario, se retorna la api key del usuario
   if (!freeFrialFromDB && userApiKey) return userApiKey;
-  else if (!freeFrialFromDB && !userApiKey) {
+  // Si el free-trial no está activo y no hay apikey del usuario, se lanza un error
+  if (!freeFrialFromDB && !userApiKey) {
     throw new Error(
       `La prueba gratis finalizó.
       Puedes ingresar una api key de openai en la configuración para seguir usando la app.`
     );
   }
+  // Si el free-trial está activo se retorna la apikey de la aplicación.
   return process.env.OPENAI_API_KEY || '';
 }
 
