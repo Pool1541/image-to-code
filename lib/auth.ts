@@ -3,7 +3,17 @@ import { PrismaAdapter } from '@auth/prisma-adapter';
 import { PrismaClient } from '@prisma/client';
 import GoogleProvider from 'next-auth/providers/google';
 
-export const prisma = new PrismaClient();
+export let prisma: any;
+
+if (process.env.NODE_ENV === 'production') {
+  prisma = new PrismaClient();
+} else {
+  if (!(global as any).prisma) {
+    (global as any).prisma = new PrismaClient();
+  }
+
+  prisma = (global as any).prisma;
+}
 
 export const authOptions: NextAuthOptions = {
   events: {
