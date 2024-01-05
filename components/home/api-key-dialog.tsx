@@ -17,7 +17,7 @@ import useConfig from '@/hooks/useConfig';
 import { useState } from 'react';
 
 export function ApiKeyDialog() {
-  const { setUserApiKey } = useConfig();
+  const { userApiKey, setUserApiKey } = useConfig();
   const [value, setValue] = useState('');
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -30,7 +30,7 @@ export function ApiKeyDialog() {
   }
 
   return (
-    <Dialog>
+    <Dialog onOpenChange={(open) => open && setValue(userApiKey)}>
       <DialogTrigger asChild>
         <Button variant='outline' className='w-full mb-5'>
           Agregar api key
