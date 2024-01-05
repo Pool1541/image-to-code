@@ -45,6 +45,7 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+  feedback      Feedback[]
   freeTrial     FreeTrial?
 
   @@map("users")
@@ -69,4 +70,16 @@ model FreeTrial {
   user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   
   @@map("free_trials")
+}
+
+model Feedback {
+  id          String    @id @default(cuid())
+  userId      String?   @map("user_id")
+  rating      Int
+  content     String
+  created_at  DateTime  @default(now())
+
+  user        User?     @relation(fields: [userId], references: [id], onDelete: SetNull, onUpdate: SetNull)
+  
+  @@map("feedbacks")
 }
