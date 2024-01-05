@@ -8,10 +8,14 @@ import Form from './form';
 import CodeDisplay from './code-display';
 import { STEPS } from '@/constants/steps';
 import { useSession } from 'next-auth/react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { viewportStyles } from '@/constants/viewport';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 
 export default function MainContent() {
   const { background, html, step, tranformImageToCode, transformUrlToCode } = useToCode();
+  const [currentViewport, setCurrentViewport] = useState(viewportStyles.mobile);
+
   // const { data } = useSession();
 
   // useEffect(() => {
@@ -27,7 +31,7 @@ export default function MainContent() {
   // }, [data]);
 
   return (
-    <section className='max-w-7xl w-full mx-auto mt-10 flex justify-center'>
+    <section className='max-w-7xl w-full mx-auto mt-0 flex justify-center'>
       {step === STEPS.LOADING && <Loader />}
       {step === STEPS.INITIAL && (
         <div className='flex flex-col gap-4 w-full'>
@@ -36,14 +40,34 @@ export default function MainContent() {
         </div>
       )}
       {step === STEPS.PREVIEW && (
-        <div className='rounded flex flex-col gap-4'>
-          <div
-            className='w-full h-full border rounded-4 border-gray-700  aspect-video'
-            style={{ backgroundColor: `#${background ? background : 'fff'}` }}>
-            <iframe srcDoc={html} className='w-full h-[832px]' />
-          </div>
-          <CodeDisplay>{html}</CodeDisplay>
-        </div>
+        <Tabs defaultValue='desktop' className='w-full'>
+          <TabsList className='grid w-full sm:w-[400px] grid-cols-3 ml-auto'>
+            <TabsTrigger value='desktop'>Desktop</TabsTrigger>
+            <TabsTrigger value='mobile'>Mobile</TabsTrigger>
+            <TabsTrigger value='code'>Code</TabsTrigger>
+          </TabsList>
+          <TabsContent value='desktop' className='w-full'>
+            <div className='flex flex-col gap-4 w-full'>
+              <div
+                className='w-full h-full border-2 rounded-md border-black m-auto'
+                style={{ backgroundColor: `#${background ? background : 'fff'}` }}>
+                <iframe srcDoc={html} className={`w-full h-[768px]`} style={{ width: '100%' }} />
+              </div>
+            </div>
+          </TabsContent>
+          <TabsContent value='mobile' className='w-full'>
+            <div className='flex flex-col gap-4 w-full'>
+              <div
+                className='w-full sm:w-96 h-full border-2 rounded-md border-black m-auto'
+                style={{ backgroundColor: `#${background ? background : 'fff'}` }}>
+                <iframe srcDoc={html} className={`w-full sm:w-96 h-[768px]`} />
+              </div>
+            </div>
+          </TabsContent>
+          <TabsContent value='code' className='w-full'>
+            <CodeDisplay>{html}</CodeDisplay>
+          </TabsContent>
+        </Tabs>
       )}
       {step === STEPS.ERROR && (
         <div className='flex flex-col gap-4 w-full'>
