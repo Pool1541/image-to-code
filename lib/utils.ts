@@ -1,3 +1,4 @@
+import { FreeTrial } from '@/repository';
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -33,5 +34,23 @@ export async function* streamReader(res: Response) {
     const chunk = decoder.decode(value);
     yield chunk;
     if (done) break;
+  }
+}
+
+export async function updateFreeTrial({ freeTrialFromDB }: { freeTrialFromDB: any }) {
+  try {
+    if (!freeTrialFromDB) throw new Error('Debes proporcionar el objeto "freeTrialFromDB"');
+
+    freeTrialFromDB.gen_count === 4
+      ? (freeTrialFromDB = await FreeTrial.update(freeTrialFromDB.id, {
+          gen_count: freeTrialFromDB.gen_count + 1,
+          active: false,
+          endDate: new Date(),
+        }))
+      : (freeTrialFromDB = await FreeTrial.update(freeTrialFromDB.id, {
+          gen_count: freeTrialFromDB.gen_count + 1,
+        }));
+  } catch (error) {
+    console.log(error);
   }
 }
