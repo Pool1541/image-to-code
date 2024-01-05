@@ -4,11 +4,11 @@ import { Output } from '@/types/output.type';
 import { NextResponse } from 'next/server';
 import { OPENAI_ERRORS } from '@/lib/openai-errors';
 import { FreeTrial } from '@/repository';
+import { updateFreeTrial } from '@/lib/utils';
 
-const USER_PROMPT = 'Generate code for a web page that looks exactly like  this';
+const USER_PROMPT = 'Generate code for a web component that looks exactly like this';
 const HTML_SYSTEM_PROMPT = `You are an expert in designing user interfaces with html and Tailwindcss
-You take screenshots of a reference web page from the user, and then build single page apps 
-using Tailwind, HTML and JS.
+You take screenshots of a reference web component from the user, and then build the web component using Tailwind, HTML and JavaScript.
 
 - Make sure the app looks exactly like the screenshot.
 - Pay close attention to background color, background color of each component, text color, font size, font family, font weight, line height,
@@ -67,16 +67,17 @@ const openai = new OpenAI();
 
 // export const runtime = 'edge';
 
-async function setApiKey({ uid, userApiKey }: { uid: string; userApiKey: string }) {
-  // Si no existe el uid pero si la apikey del usuario se retorna la apikey del usuario
-  if (!uid && userApiKey) return userApiKey;
-  if (!uid && !userApiKey) throw new Error('Inicia sesión o agrega un api key de openai iniciar.');
-  // Se busca el free-trial del usuario (Solo si está activo)
-  const freeFrialFromDB = await FreeTrial.findById(uid);
+async function setApiKey({
+  freeTrialFromDB,
+  userApiKey,
+}: {
+  freeTrialFromDB: any;
+  userApiKey: string;
+}) {
   // Si el free-trial no está activo pero si hay una apikey del usuario, se retorna la api key del usuario
-  if (!freeFrialFromDB && userApiKey) return userApiKey;
+  if (!freeTrialFromDB && userApiKey) return userApiKey;
   // Si el free-trial no está activo y no hay apikey del usuario, se lanza un error
-  if (!freeFrialFromDB && !userApiKey) {
+  if (!freeTrialFromDB && !userApiKey) {
     throw new Error(
       `La prueba gratis finalizó.
       Puedes ingresar una api key de openai en la configuración para seguir usando la app.`
@@ -93,13 +94,19 @@ export async function POST(req: Request) {
   const imageUrl = url ?? img;
 
   try {
-    const apiKey = await setApiKey({ uid, userApiKey });
+    if (!uid && !userApiKey) {
+      throw new Error('Inicia sesión o agrega un api key de openai iniciar.');
+    }
+
+    const freeTrialFromDB = await FreeTrial.findById(uid);
+    const apiKey = await setApiKey({ freeTrialFromDB, userApiKey });
     openai.apiKey = apiKey;
 
     const response = await openai.chat.completions.create({
       model: 'gpt-4-vision-preview',
       stream: true,
       max_tokens: 4096,
+      temperature: 0,
       messages: [
         {
           role: 'system',
@@ -121,6 +128,7 @@ export async function POST(req: Request) {
       ],
     });
     const stream = OpenAIStream(response);
+    await updateFreeTrial({ freeTrialFromDB });
     return new StreamingTextResponse(stream);
   } catch (error) {
     console.log(error);
