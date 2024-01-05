@@ -13,8 +13,6 @@ export function useToCode() {
   const { stack } = useStack();
   const { userApiKey } = useConfig();
 
-  console.log(userApiKey);
-
   /**
    * El usuario puede usar la aplicación con su prueba gratuita(5 veces) o con su propia api key.
    * Se debería enviar el uid si el usuario está autenticado o la apiKey si no lo está.
