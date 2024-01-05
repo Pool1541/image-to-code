@@ -3,8 +3,7 @@
 import { signIn, signOut } from 'next-auth/react';
 import { GoogleIcon } from '../icons';
 import { Button } from '../ui/button';
-import { Avatar } from '../ui/avatar';
-import { AvatarImage } from '@radix-ui/react-avatar';
+import { Avatar, AvatarImage } from '../ui/avatar';
 import { Menubar, MenubarContent, MenubarMenu, MenubarTrigger, MenubarItem } from '../ui/menubar';
 // import { MenubarItem } from '@radix-ui/react-menubar';
 
@@ -18,9 +17,9 @@ export default function AvatarWrapper({ user }: Props) {
     //   <span>{user.name}</span>
     //   <Button onClick={() => signOut()}>Cerrar sesión</Button>
     // </div>
-    <Menubar className='bg-none border-none'>
+    <Menubar className='bg-unset border-none'>
       <MenubarMenu>
-        <MenubarTrigger style={{ background: 'none !important' }} className='cursor-pointer'>
+        <MenubarTrigger style={{ background: 'transparent' }} className='cursor-pointer'>
           <Avatar>
             <AvatarImage src={user.image} />
           </Avatar>
