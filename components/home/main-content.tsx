@@ -31,8 +31,10 @@ export default function MainContent() {
   // }, [data]);
 
   return (
-    <section className='max-w-7xl w-full mx-auto mt-0 flex justify-center'>
-      {step === STEPS.LOADING && <Loader />}
+    <section className='max-w-7xl w-full mx-auto mt-0 flex justify-center min-h-[calc(100dvh-140px)]'>
+      {step === STEPS.LOADING && (
+        <Loader className='h-full flex justify-center items-center self-center ' />
+      )}
       {step === STEPS.INITIAL && (
         <div className='flex flex-col gap-4 w-full'>
           <DragAndDrop tranformImageToCode={tranformImageToCode} />
