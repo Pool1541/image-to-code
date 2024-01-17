@@ -1,8 +1,7 @@
 import Aside from '@/components/layout/aside';
-import Navbar from '@/components/layout/navbar';
 import MainContent from '../components/home/main-content';
-import { Button } from '@/components/ui/button';
 import FeedbackForm from '@/components/home/feedback-form';
+import Header from '@/components/layout/header';
 
 export default function Home() {
   return (
@@ -10,12 +9,7 @@ export default function Home() {
       <div className='lg:grid grid-cols-[350px_1fr]'>
         <Aside />
         <main className='bg-gray-950 p-2 md:p-10 min-h-screen'>
-          <header className='flex justify-between items-middle pb-5'>
-            <h2>Dashboard</h2>
-            <nav>
-              <Navbar />
-            </nav>
-          </header>
+          <Header />
           <MainContent />
         </main>
       </div>
