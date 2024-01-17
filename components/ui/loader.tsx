@@ -1,6 +1,8 @@
-export default function Loader() {
+interface Props extends React.HTMLAttributes<HTMLDivElement> {}
+
+export default function Loader(props: Props) {
   return (
-    <div className='h-full flex justify-center items-center self-center'>
+    <div {...props}>
       <div role='status'>
         <svg
           aria-hidden='true'
