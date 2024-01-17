@@ -8,14 +8,37 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import useStack from '@/hooks/useStack';
+import useDrawer from '@/hooks/useDrawer';
 import { Output, OutputType } from '@/types/output.type';
 import { ApiKeyDialog } from '../home/api-key-dialog';
+import { clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+import { Xicon } from '../icons';
 
 export default function Aside() {
   const { setStack } = useStack();
+  const { animation, toggleDrawer } = useDrawer();
+
   return (
-    <aside className='hidden lg:flex flex-col gap-10 sm:min-h-screen px-6 py-8 bg-gray-900'>
-      <header className='text-center'>
+    <aside
+      className={twMerge(
+        clsx(
+          'fixed w-full translate-x-full lg:static lg:translate-x-0 lg:flex flex-col gap-10 min-h-screen px-6 py-8 bg-gray-900 z-50',
+          {
+            '': !animation,
+            'animate-fade-right': animation === 'fade-in',
+            'animate-fade-left': animation === 'fade-out',
+          }
+        )
+      )}>
+      <header className='text-center relative mt-8 lg:mt-0'>
+        <button onClick={toggleDrawer} className='absolute top-[-3rem] right-[-0.5rem] lg:hidden'>
+          <Xicon
+            height={30}
+            width={30}
+            className='text-slate-400 hover:text-white transition-colors duration-300'
+          />
+        </button>
         <h1 className='text-2xl font-semibold'>Image 2 code</h1>
         <h2 className='text-sm opacity-75 mt-2'>Crea componentes a partir de imágenes</h2>
       </header>
