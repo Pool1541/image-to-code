@@ -84,7 +84,7 @@ export default function FeedbackForm() {
     <Dialog open={open} onOpenChange={(open) => (setOpen(open), resetValues())}>
       <DialogTrigger asChild>
         <Button className='fixed bottom-3 right-3 bg-amber-700 text-slate-100 hover:bg-amber-600'>
-          <p className=''>¿Alguna sugerencia?</p>
+          <p className=''>Danos tu opinión</p>
         </Button>
       </DialogTrigger>
       <DialogContent className='sm:max-w-md'>
@@ -98,11 +98,11 @@ export default function FeedbackForm() {
           <div className='grid flex-1 gap-2'>
             <Rating handleRating={handleRating} />
             <Label htmlFor='content' className='sr-only'>
-              content
+              Dejanos un comentario
             </Label>
             <Textarea
               id='content'
-              placeholder='Hablanos sobre tu experiencia'
+              placeholder='Dejanos un comentario'
               className='resize-none'
               onChange={(e) => handleContent(e.target.value)}
             />
@@ -112,7 +112,7 @@ export default function FeedbackForm() {
           <Button type='submit' variant='secondary' form='feedback-form'>
             Enviar
           </Button>
-          <div className='m-auto flex-1 flex justify-center'>
+          <div className='m-auto flex-1 flex justify-center mb-4 lg:m-auto'>
             <span className='text-sm text-red-500 text-left'>{validationError}</span>
           </div>
         </DialogFooter>
