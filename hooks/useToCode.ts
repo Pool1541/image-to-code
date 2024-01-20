@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { STEPS } from '@/constants/steps';
 import { useSession } from 'next-auth/react';
 import useConfig from './useConfig';
+import ToastError from '@/components/home/toast-error';
 
 export function useToCode() {
   const { data } = useSession();
@@ -37,7 +38,8 @@ export function useToCode() {
         setResult((prev) => prev + chunk);
       }
     } catch (error) {
-      if (error instanceof Error) toast.error(error.message);
+      if (error instanceof Error)
+        toast.error(ToastError({ message: error.message }), { duration: 7000 });
     }
   }
 
