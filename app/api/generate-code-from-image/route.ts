@@ -95,10 +95,11 @@ export async function POST(req: Request) {
 
   try {
     if (!uid && !userApiKey) {
-      throw new Error('Inicia sesión o agrega un api key de openai iniciar.');
+      throw new Error('Inicia sesión o agrega un api key de openai.');
     }
 
-    const freeTrialFromDB = await FreeTrial.findById(uid);
+    // Si el uid es indefinido la busqueda findById desencadena un error desde prisma.
+    const freeTrialFromDB = uid && (await FreeTrial.findById(uid));
     const apiKey = await setApiKey({ freeTrialFromDB, userApiKey });
     openai.apiKey = apiKey;
 
