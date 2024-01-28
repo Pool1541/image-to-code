@@ -1,5 +1,5 @@
 import AvatarWrapper from '@/components/home/avatar-wrapper';
-import { authOptions } from '@/lib/auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { getServerSession } from 'next-auth';
 
 export default async function Navbar() {
