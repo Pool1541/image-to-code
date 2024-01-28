@@ -38,19 +38,15 @@ export async function* streamReader(res: Response) {
 }
 
 export async function updateFreeTrial({ freeTrialFromDB }: { freeTrialFromDB: any }) {
-  try {
-    if (!freeTrialFromDB) throw new Error('Debes proporcionar el objeto "freeTrialFromDB"');
+  if (!freeTrialFromDB) throw new Error('Debes proporcionar el objeto "freeTrialFromDB"');
 
-    freeTrialFromDB.gen_count === 4
-      ? (freeTrialFromDB = await FreeTrial.update(freeTrialFromDB.id, {
-          gen_count: freeTrialFromDB.gen_count + 1,
-          active: false,
-          endDate: new Date(),
-        }))
-      : (freeTrialFromDB = await FreeTrial.update(freeTrialFromDB.id, {
-          gen_count: freeTrialFromDB.gen_count + 1,
-        }));
-  } catch (error) {
-    console.log(error);
-  }
+  freeTrialFromDB.gen_count === 4
+    ? (freeTrialFromDB = await FreeTrial.update(freeTrialFromDB.id, {
+        gen_count: freeTrialFromDB.gen_count + 1,
+        active: false,
+        endDate: new Date(),
+      }))
+    : (freeTrialFromDB = await FreeTrial.update(freeTrialFromDB.id, {
+        gen_count: freeTrialFromDB.gen_count + 1,
+      }));
 }
