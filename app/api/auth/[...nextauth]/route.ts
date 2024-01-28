@@ -1,10 +1,10 @@
-import NextAuth, { NextAuthOptions } from 'next-auth';
 import { PrismaAdapter } from '@auth/prisma-adapter';
-import GoogleProvider from 'next-auth/providers/google';
-import logger from '@/lib/logger';
 import { prisma } from '@/lib/prisma';
+import GoogleProvider from 'next-auth/providers/google';
+import NextAuth from 'next-auth';
+import logger from '@/lib/logger';
 
-export const authOptions: NextAuthOptions = {
+const handler = NextAuth({
   events: {
     createUser: async ({ user }) => {
       try {
@@ -45,8 +45,6 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
   },
-};
-
-const handler = NextAuth(authOptions);
+});
 
 export { handler as GET, handler as POST };
