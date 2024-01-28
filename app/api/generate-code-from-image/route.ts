@@ -5,6 +5,7 @@ import { NextResponse } from 'next/server';
 import { OPENAI_ERRORS } from '@/lib/openai-errors';
 import { FreeTrial } from '@/repository';
 import { updateFreeTrial } from '@/lib/utils';
+import logger from '@/lib/logger';
 
 const USER_PROMPT = 'Generate code for a web component that looks exactly like this';
 const HTML_SYSTEM_PROMPT = `You are an expert in designing user interfaces with html and Tailwindcss
@@ -129,10 +130,25 @@ export async function POST(req: Request) {
       ],
     });
     const stream = OpenAIStream(response);
-    await updateFreeTrial({ freeTrialFromDB });
+
+    /**  TODO:
+     * Siempre se está ejecutando la función updateFreeTrial ❌
+     * Se debería ejecutar la función updateFreeTrial solo si el freeTrialFromDB existe ya que el usuario puede no estar autenticado.
+     */
+    freeTrialFromDB && (await updateFreeTrial({ freeTrialFromDB }));
+
+    logger.info('¡Se ha generado un nuevo componente!', {
+      service: 'generate',
+      user: uid || 'anonymous',
+    });
     return new StreamingTextResponse(stream);
   } catch (error) {
-    console.log(error);
+    if (error instanceof Error) {
+      logger.error(error.stack as string, {
+        params: { url: url || false, uid, stack, img: Boolean(img), userApiKey },
+      });
+    }
+
     if (error instanceof APIError) {
       const { status } = error;
       const errorResponse = {

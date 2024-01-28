@@ -1,3 +1,4 @@
+import logger from '@/lib/logger';
 import { FreeTrial, FreeTrialRepository, User, UserRepository } from '@/repository';
 import { NextResponse } from 'next/server';
 
@@ -17,7 +18,7 @@ class FreeTrialController {
 
       return NextResponse.json(freeTrialFromDB);
     } catch (error) {
-      console.log(error);
+      if (error instanceof Error) logger.error(error.stack);
       return NextResponse.json({ message: (error as Error).message }, { status: 404 });
     }
   }
@@ -34,7 +35,7 @@ class FreeTrialController {
         freeTrial: { connect: { id: newFreeTrial.id } },
       });
     } catch (error) {
-      console.log(error);
+      if (error instanceof Error) logger.error(error.stack);
     }
   }
 
@@ -62,7 +63,7 @@ class FreeTrialController {
 
       return NextResponse.json(freeTrialFromDB);
     } catch (error) {
-      console.log(error);
+      if (error instanceof Error) logger.error(error.stack);
       return NextResponse.json({ message: 'Server error' }, { status: 500 });
     }
   }
