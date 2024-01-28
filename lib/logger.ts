@@ -13,7 +13,7 @@ const customFormat = ({ isConsole = false }: { isConsole?: Boolean } = {}) => {
     format.errors({ stack: true }),
     format.splat(),
     format.printf(
-      ({ level, message, label = process.env.NODE_ENV, timestamp }) =>
+      ({ level, message, label = process.env.VERCEL_ENV, timestamp }) =>
         `${timestamp} [${label}] ${level}: ${message}`
     ),
   ];
@@ -45,7 +45,7 @@ const getLogger = (fileName = 'application') => {
     transports: [consoleTransport],
   });
 
-  if (process.env.NODE_ENV === 'development') {
+  if (process.env.VERCEL_ENV === 'development') {
     logger.add(fileLogTransport);
   } else {
     logger.add(new LogtailTransport(logtail));
