@@ -24,14 +24,14 @@ const customFormat = ({ isConsole = false }: { isConsole?: Boolean } = {}) => {
 };
 
 const getLogger = (fileName = 'application') => {
-  const fileLogTransport = new transports.DailyRotateFile({
-    filename: `logs/${fileName}-%DATE%.log`,
-    datePattern: 'YYYY-MM-DD',
-    zippedArchive: true,
-    maxSize: '20m',
-    maxFiles: '30d',
-    format: customFormat(),
-  });
+  // const fileLogTransport = new transports.DailyRotateFile({
+  //   filename: `logs/${fileName}-%DATE%.log`,
+  //   datePattern: 'YYYY-MM-DD',
+  //   zippedArchive: true,
+  //   maxSize: '20m',
+  //   maxFiles: '30d',
+  //   format: customFormat(),
+  // });
 
   const consoleTransport = new transports.Console({
     level: 'info',
@@ -46,7 +46,7 @@ const getLogger = (fileName = 'application') => {
   });
 
   if (process.env.VERCEL_ENV === 'development') {
-    logger.add(fileLogTransport);
+    // logger.add(fileLogTransport);
   } else {
     logger.add(new LogtailTransport(logtail));
   }
