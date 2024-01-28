@@ -1,4 +1,5 @@
-import { prisma } from '@/lib/auth';
+import logger from '@/lib/logger';
+import { prisma } from '@/lib/prisma';
 import { FeedBackRepository, Feedback, User, UserRepository } from '@/repository';
 import { NextResponse } from 'next/server';
 
@@ -29,10 +30,14 @@ class FeedbackController {
       //   where: { id: uid },
       //   include: { feedback: true },
       // });
-
+      logger.info('¡Se ha recibido un nuevo comentario!', {
+        service: 'feedback',
+        feedbackId: newFeedback.id,
+        user: uid || 'anonymous',
+      });
       return NextResponse.json({ message: '¡Gracias por tu comentario!' }, { status: 201 });
     } catch (error) {
-      console.log(error);
+      if (error instanceof Error) logger.error(error.stack);
       return NextResponse.json({ message: 'Hubo un error en el servidor' }, { status: 500 });
     }
   }

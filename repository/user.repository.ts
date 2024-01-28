@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
 import { Prisma, PrismaClient } from '@prisma/client';
 
 export class UserRepository {
