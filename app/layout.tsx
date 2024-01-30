@@ -7,6 +7,7 @@ import Providers from '@/components/layout/providers';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
+  icons: '/icon.ico',
   title: 'Image to component',
   description:
     'Impulsa tu desarrollo web con nuestra innovadora aplicación que combina la potencia de la inteligencia artificial y las tecnologías líderes en la creación de interfaces. Con nuestro Generador de Componentes, simplemente carga una imagen y deja que la inteligencia artificial haga el trabajo pesado. Transforma automáticamente tu diseño visual en código HTML optimizado o componentes React, todo ello integrado con el popular framework de diseño Tailwind CSS.',
