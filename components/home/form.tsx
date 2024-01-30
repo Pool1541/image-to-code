@@ -12,7 +12,7 @@ interface FormProps {
 export default function Form({ transformUrlToCode }: FormProps) {
   return (
     <form
-      className='flex flex-col gap-10'
+      className='flex flex-col gap-5'
       onSubmit={(event) => {
         event.preventDefault();
         const form = event.currentTarget as HTMLFormElement;
@@ -23,7 +23,7 @@ export default function Form({ transformUrlToCode }: FormProps) {
       }}>
       <Label htmlFor='url'>Introduce la url de la imagen</Label>
       <Input name='url' id='url' type='text' placeholder='https://tu-screenshot/image.jpg' />
-      <Button>Generar código de la imagen</Button>
+      <Button>Generar</Button>
     </form>
   );
 }
