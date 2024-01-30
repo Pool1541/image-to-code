@@ -8,11 +8,17 @@ import useConfig from './useConfig';
 import ToastError from '@/components/home/toast-error';
 
 export function useToCode() {
+  const [completed, setCompleted] = useState(false);
   const { data } = useSession();
   const [result, setResult] = useState('');
   const [step, setStep] = useState(STEPS.INITIAL);
   const { stack } = useStack();
   const { userApiKey } = useConfig();
+
+  function restart() {
+    setStep(STEPS.INITIAL);
+    setCompleted(false);
+  }
 
   async function transformToCode(body: string) {
     try {
@@ -37,6 +43,8 @@ export function useToCode() {
       for await (const chunk of streamReader(res)) {
         setResult((prev) => prev + chunk);
       }
+
+      setCompleted(true);
     } catch (error) {
       if (error instanceof Error)
         toast.error(ToastError({ message: error.message }), { duration: 7000 });
@@ -64,5 +72,5 @@ export function useToCode() {
   const [background, ...rest] = result.split('|||');
   const html = rest.pop() || '';
 
-  return { step, background, html, tranformImageToCode, transformUrlToCode };
+  return { step, background, html, completed, tranformImageToCode, transformUrlToCode, restart };
 }
