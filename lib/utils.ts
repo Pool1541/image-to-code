@@ -50,3 +50,15 @@ export async function updateFreeTrial({ freeTrialFromDB }: { freeTrialFromDB: an
         gen_count: freeTrialFromDB.gen_count + 1,
       }));
 }
+
+export async function getFileFromClipboard(callback: (file: File) => Promise<void> | void) {
+  const clipboardData = await navigator.clipboard.read();
+  for (const item of clipboardData) {
+    if (item.types.includes('image/png')) {
+      const blob = await item.getType('image/png');
+      const file = new File([blob], 'component.png', { type: 'image/png' });
+
+      callback(file);
+    }
+  }
+}
