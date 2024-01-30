@@ -21,4 +21,4 @@
 ## Despliegue
 
 - [x] Se deberá configurar y desplegar la aplicación en Vercel.
-- [] Se deberá configurar y desplegar la base de datos en Vercel.
+- [x] Se deberá configurar y desplegar la base de datos en Vercel.
