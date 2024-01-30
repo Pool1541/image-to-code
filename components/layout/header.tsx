@@ -4,7 +4,7 @@ import Navbar from './navbar';
 export default function Header() {
   return (
     <header className='flex justify-between items-middle pb-5'>
-      <h2 className='hidden lg:block'>Dashboard</h2>
+      <h2 className='hidden lg:block'></h2>
       <BurgerButton />
       <nav>
         <Navbar />
