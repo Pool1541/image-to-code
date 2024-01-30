@@ -22,3 +22,7 @@
 
 - [x] Se deberá configurar y desplegar la aplicación en Vercel.
 - [x] Se deberá configurar y desplegar la base de datos en Vercel.
+
+## UI
+
+- [] Solucionar el parpadeo al generar el componente.
