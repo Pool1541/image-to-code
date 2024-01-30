@@ -23,7 +23,7 @@ export default function Aside() {
     <aside
       className={twMerge(
         clsx(
-          'fixed w-full translate-x-full lg:static lg:translate-x-0 lg:flex flex-col gap-10 min-h-screen px-6 py-8 bg-gray-900 z-50',
+          'fixed w-full translate-x-full lg:static lg:translate-x-0 flex flex-col gap-10 min-h-screen px-6 py-8 bg-gray-900 z-50',
           {
             '': !animation,
             'animate-fade-right': animation === 'fade-in',
@@ -31,7 +31,7 @@ export default function Aside() {
           }
         )
       )}>
-      <header className='text-center relative mt-8 lg:mt-0'>
+      <header className='text-center relative mt-8 pb-5 border-b-2 lg:mt-0 '>
         <button onClick={toggleDrawer} className='absolute top-[-3rem] right-[-0.5rem] lg:hidden'>
           <Xicon
             height={30}
@@ -39,7 +39,7 @@ export default function Aside() {
             className='text-slate-400 hover:text-white transition-colors duration-300'
           />
         </button>
-        <h1 className='text-2xl font-semibold'>Image 2 code</h1>
+        <h1 className='text-2xl font-semibold'>Image to component</h1>
         <h2 className='text-sm opacity-75 mt-2'>Crea componentes a partir de imágenes</h2>
       </header>
       <section>
