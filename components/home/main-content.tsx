@@ -45,7 +45,7 @@ export default function MainContent() {
             <div className='flex flex-col gap-4 w-full'>
               <div
                 className='w-full h-full border-2 rounded-md border-black m-auto overflow-hidden'
-                style={{ backgroundColor: `#${background ? background : 'fff'}` }}>
+                style={{ backgroundColor: `${background ? background : '#fff'}` }}>
                 <iframe srcDoc={html} className={`w-full h-[768px]`} style={{ width: '100%' }} />
               </div>
             </div>
@@ -73,3 +73,7 @@ export default function MainContent() {
     </section>
   );
 }
+
+// const IframeWrapper = React.memo(function Wrapper() {
+//   return <></>;
+// });

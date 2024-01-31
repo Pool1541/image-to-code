@@ -1,4 +1,5 @@
-import { useState } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useEffect, useState } from 'react';
 import useStack from './useStack';
 import { streamReader, toBase64 } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -9,6 +10,7 @@ import ToastError from '@/components/home/toast-error';
 
 export function useToCode() {
   const [completed, setCompleted] = useState(false);
+  const [background, setBackground] = useState('');
   const { data } = useSession();
   const [result, setResult] = useState('');
   const [step, setStep] = useState(STEPS.INITIAL);
@@ -18,6 +20,7 @@ export function useToCode() {
   function restart() {
     setStep(STEPS.INITIAL);
     setCompleted(false);
+    setBackground('');
   }
 
   async function transformToCode(body: string) {
@@ -69,8 +72,15 @@ export function useToCode() {
     await transformToCode(JSON.stringify({ url, stack, uid, userApiKey }));
   }
 
-  const [background, ...rest] = result.split('|||');
+  const [bg, ...rest] = result.split('|||');
+
   const html = rest.pop() || '';
+
+  useEffect(() => {
+    if (!background && bg.length >= 7) {
+      setBackground(bg.trim());
+    }
+  }, [bg]);
 
   return { step, background, html, completed, tranformImageToCode, transformUrlToCode, restart };
 }
