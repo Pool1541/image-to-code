@@ -54,7 +54,7 @@ export default function MainContent() {
             <div className='flex flex-col gap-4 w-full'>
               <div
                 className='w-full sm:w-96 h-full border-2 rounded-md border-black m-auto overflow-hidden'
-                style={{ backgroundColor: `#${background ? background : 'fff'}` }}>
+                style={{ backgroundColor: `${background ? background : '#fff'}` }}>
                 <iframe srcDoc={html} className={`w-full sm:w-96 h-[768px]`} />
               </div>
             </div>
