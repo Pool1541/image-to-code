@@ -1,37 +1,34 @@
-import OpenAI, { APIError } from 'openai';
-import { OpenAIStream, StreamingTextResponse } from 'ai';
 import { Output } from '@/types/output.type';
 import { NextResponse } from 'next/server';
-import { OPENAI_ERRORS } from '@/lib/openai-errors';
-import { FreeTrial } from '@/repository';
-import { updateFreeTrial } from '@/lib/utils';
-import logger from '@/lib/logger';
+import { GoogleGenerativeAI } from '@google/generative-ai';
+import { readFileSync } from 'fs';
+import { StreamingTextResponse } from 'ai';
 
 const USER_PROMPT = 'Generate code for a web component that looks exactly like this';
-const HTML_SYSTEM_PROMPT = `You are an expert in designing user interfaces with html and Tailwindcss
-You take screenshots of a reference web component from the user, and then build the web component using Tailwind, HTML and JavaScript.
+const HTML_SYSTEM_PROMPT = `You are an expert at replicating responsive web user interfaces from an image.
+First identify each of the elements in the image, then define what type of element it is and the styles it has, finally write the component code with all the elements you identified respecting the following rules.
 
+- use the correct colors in each element.
+- Do not use icons from other sources, use icons only from the fontawesome library, as in the following example:
+  <i class="fa-brands fa-apple"></i>
 - Make sure the app looks exactly like the screenshot.
-- Pay close attention to background color, background color of each component, text color, font size, font family, font weight, line height,
-padding, margin, border, border radius, box shadow, etc. Match the colors and sizes exactly.
-- Make sure each component is exactly the same as the components in the image.
-- Make sure you make responsive design so it looks good on different screen sizes.
-- Make sure the background, text, and icon colors and fill are correct.
-- Make sure the text is exactly the same as the image.
-- Make sure the spacing between elements is correct.
-- Make sure the text is also responsive and adaptable to different screen sizes.
+- Pay close attention to background color, text color, font size, font family, 
+padding, margin, border, etc. Match the colors and sizes exactly.
+- Use the exact text from the screenshot.
 - Do not add comments in the code such as "<!-- Add other navigation links as needed -->" and "<!-- ... other news items ... -->" in place of writing the full code. WRITE THE FULL CODE.
-- You are also an expert at counting repeated elements in the interface and replicating them, carefully count the number of repeated elements such as cards and write them all in the code to make sure the result is correct.
+- Repeat elements as needed to match the screenshot. For example, if there are 15 items, the code should have 15 items. DO NOT LEAVE comments like "<!-- Repeat for each news item -->" or bad things will happen.
 - For images, use placeholder images from https://placehold.co and include a detailed description of the image in the alt text so that an image generation AI can generate the image later.
 
 In terms of libraries,
+
 - Use this script to include Tailwind: <script src="https://cdn.tailwindcss.com"></script>
 - You can use Google Fonts
-- Font Awesome 6 for icons: <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+- Font Awesome for icons: <script src="https://kit.fontawesome.com/3feef57c63.js" crossorigin="anonymous"></script>
 
 Return first the background hexadecimals, put a ||| separator, and then all the code.
 Do not include markdown "\`\`\`" or "\`\`\`html" at the start or end.
-Make sure you have the correct code.`;
+Make sure you have the correct code.
+`;
 
 const REACT_SYSTEM_PROMPT = `You are an expert in designing user interfaces with React and Tailwindcss
 You take screenshots of a reference web component from the user, and then build the web component using Tailwind, HTML and JavaScript.
@@ -63,9 +60,7 @@ Return first the background hexadecimals, put a ||| separator, and then all the 
 Do not include markdown "\`\`\`" or "\`\`\`html" at the start or end.
 Make sure you have the correct code.`;
 
-const openai = new OpenAI();
-
-// export const runtime = 'edge';
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY!);
 
 async function setApiKey({
   freeTrialFromDB,
@@ -87,6 +82,36 @@ async function setApiKey({
   return process.env.OPENAI_API_KEY || '';
 }
 
+function setInlineData(path: any, mimeType = 'image/png') {
+  const data = path.split(',')[1];
+  return {
+    inlineData: {
+      data,
+      mimeType,
+    },
+  };
+}
+
+const generationConfig = {
+  stopSequences: [],
+  maxOutputTokens: 4096,
+  temperature: 0.1,
+};
+
+function iteratorToStream(iterator: any) {
+  return new ReadableStream({
+    async pull(controller) {
+      const { value, done } = await iterator.next();
+
+      if (done) {
+        controller.close();
+      } else {
+        controller.enqueue(value.text());
+      }
+    },
+  });
+}
+
 export async function POST(req: Request) {
   const { url, img, stack, uid, userApiKey } = await req.json();
 
@@ -94,67 +119,15 @@ export async function POST(req: Request) {
   const imageUrl = url ?? img;
 
   try {
-    if (!uid && !userApiKey) {
-      throw new Error('Inicia sesión o agrega un api key de openai.');
-    }
+    const model = genAI.getGenerativeModel({ model: 'gemini-pro-vision', generationConfig });
+    const imageParts = [setInlineData(imageUrl)];
 
-    // Si el uid es indefinido la busqueda findById desencadena un error desde prisma.
-    const freeTrialFromDB = uid && (await FreeTrial.findById(uid));
-    const apiKey = await setApiKey({ freeTrialFromDB, userApiKey });
-    openai.apiKey = apiKey;
+    const result = await model.generateContentStream([SYSTEM_PROMPT, ...imageParts]);
+    const stream = iteratorToStream(result.stream);
 
-    const response = await openai.chat.completions.create({
-      model: 'gpt-4-vision-preview',
-      stream: true,
-      max_tokens: 4096,
-      temperature: 0,
-      messages: [
-        {
-          role: 'system',
-          content: SYSTEM_PROMPT,
-        },
-        {
-          role: 'user',
-          content: [
-            {
-              type: 'text',
-              text: USER_PROMPT,
-            },
-            {
-              type: 'image_url',
-              image_url: { url: imageUrl, detail: 'high' },
-            },
-          ],
-        },
-      ],
-    });
-    const stream = OpenAIStream(response);
-
-    /**  TODO:
-     * Siempre se está ejecutando la función updateFreeTrial ❌
-     * Se debería ejecutar la función updateFreeTrial solo si el freeTrialFromDB existe ya que el usuario puede no estar autenticado.
-     */
-    freeTrialFromDB && (await updateFreeTrial({ freeTrialFromDB }));
-
-    logger.info('¡Se ha generado un nuevo componente!', {
-      service: 'generate',
-      user: uid || 'anonymous',
-    });
     return new StreamingTextResponse(stream);
   } catch (error) {
-    if (error instanceof Error) {
-      logger.error(error.stack as string, {
-        params: { url: url || false, uid, stack, img: Boolean(img), userApiKey },
-      });
-    }
-
-    if (error instanceof APIError) {
-      const { status } = error;
-      const errorResponse = {
-        message: OPENAI_ERRORS[status!],
-      };
-      return NextResponse.json(errorResponse, { status: status });
-    }
+    console.log(error);
 
     if (error instanceof Error) {
       const errorResponse = {
