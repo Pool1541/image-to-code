@@ -21,6 +21,7 @@ export function useToCode() {
     setStep(STEPS.INITIAL);
     setCompleted(false);
     setBackground('');
+    setResult('');
   }
 
   async function transformToCode(body: string) {
