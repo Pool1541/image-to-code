@@ -29,7 +29,7 @@
     "lucide-react": "^0.294.0",
     "next": "14.0.3",
     "next-auth": "^4.24.5",
-    "openai": "^4.20.1",
+    "openai": "^4.47.1",
     "prismjs": "^1.29.0",
     "react": "^18",
     "react-dom": "^18",
