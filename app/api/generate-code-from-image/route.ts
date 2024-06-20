@@ -105,7 +105,7 @@ export async function POST(req: Request) {
     openai.apiKey = apiKey;
 
     const response = await openai.chat.completions.create({
-      model: 'gpt-4-vision-preview',
+      model: 'gpt-4o',
       stream: true,
       max_tokens: 4096,
       temperature: 0,
