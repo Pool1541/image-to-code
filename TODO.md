@@ -26,3 +26,40 @@
 ## UI
 
 - [x] Solucionar el parpadeo al generar el componente.
+
+## Uso libre y limitado
+
+- [ ] Ya no es necesario que el usuario esté registrado para usar la aplicación.
+- [ ] El usuario debe poder crear componentes sin necesidad de ingresar con una cuenta.
+- [ ] Se debe agregar un límite de uso por usuario no autenticado
+- [ ] El límite de uso debe ser aplicado a la ip del usuario.
+- [ ] Se debe limitar el uso a 5 solicitudes en 24 horas para usuarios no autenticados y 15 solicitudes en 24 horas para usuarios autenticados.
+
+## Historial de componentes
+
+- [ ] El historial de componentes debe estar disponible solo para los usuarios autenticados.
+- [ ] El botón para guardar un componente creado debe mostrarse para usuarios autenticados y no autenticados. Si un usuario no autenticado hace clic en el botón de guardar, se le debe redirigir a la vista de ingreso.
+- [ ] Los usuarios autenticados deben poder ver sus componentes guardados, tanto públicos como privados.
+- [ ] Los componentes guardados deberían poder ser púbicos o privados. Por defectos son públicos.
+- [ ] Los componentes guardados pueden ser eliminados mediante un soft delete.
+- [ ] Los componentes guardados deben contar con la siguiente información: 
+  - fecha de creación
+  - fecha de modificación
+  - user_id
+  - titulo
+  - descripción (opcional)
+  - vista previa
+  - codigo_id
+  - eliminado (booleano)
+  - público (booleano)
+  - visitas
+  - usos (cuando un usuario le da al botón ```copiar``` del componente)
+- [ ] Se debe crear la entidad like con la siguiente información:
+  - fecha de creación
+  - user_id
+  - component_id
+- [ ] Mostrar los componentes públicos en la página principal de la aplicación, ordenados en dos categorías: 
+  - populares (por likes - descendente)
+  - recientes
+- [ ] Agregarle la columna ```likes``` a usuario con relación uno a muchos con la entidad ```like```
+- [ ] Agregarle la columna ```likes``` a componente con relación uno a muchos con la entidad ```like```
