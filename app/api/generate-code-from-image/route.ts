@@ -1,11 +1,12 @@
 import OpenAI, { APIError } from "openai";
 import { OpenAIStream, StreamingTextResponse } from "ai";
 import { Output } from "@/types/output.type";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { OPENAI_ERRORS } from "@/lib/openai-errors";
 import { FreeTrial } from "@/repository";
 import { updateFreeTrial } from "@/lib/utils";
 import logger from "@/lib/logger";
+import { limit } from "@/lib/rate-limit";
 
 const USER_PROMPT = "Generate code for a web component that looks exactly like this";
 const HTML_SYSTEM_PROMPT = `You are an expert in designing user interfaces with html and Tailwindcss
@@ -84,8 +85,13 @@ async function setApiKey({ freeTrialFromDB, userApiKey }: { freeTrialFromDB: any
   return process.env.OPENAI_API_KEY || "";
 }
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   const { url, img, stack, uid, userApiKey } = await req.json();
+
+  const ip = req.ip ?? req.headers.get("X-Forwarded-For") ?? "unknown";
+  const isRateLimited = limit(ip, Boolean(uid));
+
+  if (isRateLimited) return NextResponse.json({ error: "Too much request" }, { status: 429 });
 
   const SYSTEM_PROMPT = stack === Output.html_tailwind ? HTML_SYSTEM_PROMPT : REACT_SYSTEM_PROMPT;
   const imageUrl = url ?? img;
