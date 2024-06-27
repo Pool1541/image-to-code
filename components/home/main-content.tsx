@@ -22,7 +22,10 @@ export default function MainContent() {
       )}
       {step === STEPS.INITIAL && (
         <div className='flex flex-col gap-4 w-full'>
-          <DragAndDrop tranformImageToCode={tranformImageToCode} />
+          <div className='h-[180px] w-full'>
+            <DragAndDrop tranformImageToCode={tranformImageToCode} />
+          </div>
+
           <Form transformUrlToCode={transformUrlToCode} />
         </div>
       )}
