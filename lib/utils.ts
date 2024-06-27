@@ -38,7 +38,10 @@ export async function* streamReader(res: Response) {
 }
 
 export async function updateFreeTrial({ freeTrialFromDB }: { freeTrialFromDB: any }) {
-  if (!freeTrialFromDB) throw new Error('Debes proporcionar el objeto "freeTrialFromDB"');
+  // Si no existe el freeTrail(solo lo tienen usuarios autenticados), arroja un error.
+  // if (!freeTrialFromDB) throw new Error('Debes proporcionar el objeto "freeTrialFromDB"');
+
+  if (!freeTrialFromDB) return;
 
   // Valida si el número de componentes generados es mayor o igual que 4, si es así, termina la pruebra gratis, sino, solo aumenta el número de componentes generados.
   // freeTrialFromDB.gen_count <= 4
@@ -55,7 +58,6 @@ export async function updateFreeTrial({ freeTrialFromDB }: { freeTrialFromDB: an
   freeTrialFromDB = await FreeTrial.update(freeTrialFromDB.id, {
     gen_count: freeTrialFromDB.gen_count + 1,
   });
-  
 }
 
 export async function getFileFromClipboard(callback: (file: File) => Promise<void> | void) {

@@ -1,13 +1,13 @@
-import OpenAI, { APIError } from 'openai';
-import { OpenAIStream, StreamingTextResponse } from 'ai';
-import { Output } from '@/types/output.type';
-import { NextResponse } from 'next/server';
-import { OPENAI_ERRORS } from '@/lib/openai-errors';
-import { FreeTrial } from '@/repository';
-import { updateFreeTrial } from '@/lib/utils';
-import logger from '@/lib/logger';
+import OpenAI, { APIError } from "openai";
+import { OpenAIStream, StreamingTextResponse } from "ai";
+import { Output } from "@/types/output.type";
+import { NextResponse } from "next/server";
+import { OPENAI_ERRORS } from "@/lib/openai-errors";
+import { FreeTrial } from "@/repository";
+import { updateFreeTrial } from "@/lib/utils";
+import logger from "@/lib/logger";
 
-const USER_PROMPT = 'Generate code for a web component that looks exactly like this';
+const USER_PROMPT = "Generate code for a web component that looks exactly like this";
 const HTML_SYSTEM_PROMPT = `You are an expert in designing user interfaces with html and Tailwindcss
 You take screenshots of a reference web component from the user, and then build the web component using Tailwind, HTML and JavaScript.
 
@@ -68,24 +68,20 @@ const openai = new OpenAI();
 
 // export const runtime = 'edge';
 
-async function setApiKey({
-  freeTrialFromDB,
-  userApiKey,
-}: {
-  freeTrialFromDB: any;
-  userApiKey: string;
-}) {
+async function setApiKey({ freeTrialFromDB, userApiKey }: { freeTrialFromDB: any; userApiKey: string }) {
   // Si el free-trial no está activo pero si hay una apikey del usuario, se retorna la api key del usuario
   if (!freeTrialFromDB && userApiKey) return userApiKey;
+
   // Si el free-trial no está activo y no hay apikey del usuario, se lanza un error
-  if (!freeTrialFromDB && !userApiKey) {
-    throw new Error(
-      `La prueba gratis finalizó.
-      Puedes ingresar una api key de openai en la configuración para seguir usando la app.`
-    );
-  }
+  // if (!freeTrialFromDB && !userApiKey) {
+  //   throw new Error(
+  //     `La prueba gratis finalizó.
+  //     Puedes ingresar una api key de openai en la configuración para seguir usando la app.`
+  //   );
+  // }
+
   // Si el free-trial está activo se retorna la apikey de la aplicación.
-  return process.env.OPENAI_API_KEY || '';
+  return process.env.OPENAI_API_KEY || "";
 }
 
 export async function POST(req: Request) {
@@ -95,9 +91,10 @@ export async function POST(req: Request) {
   const imageUrl = url ?? img;
 
   try {
-    if (!uid && !userApiKey) {
-      throw new Error('Inicia sesión o agrega un api key de openai.');
-    }
+    // Valida si el usuario está autenticado o si ingresó una api key.
+    // if (!uid && !userApiKey) {
+    //   throw new Error('Inicia sesión o agrega un api key de openai.');
+    // }
 
     // Si el uid es indefinido la busqueda findById desencadena un error desde prisma.
     const freeTrialFromDB = uid && (await FreeTrial.findById(uid));
@@ -105,25 +102,25 @@ export async function POST(req: Request) {
     openai.apiKey = apiKey;
 
     const response = await openai.chat.completions.create({
-      model: 'gpt-4o',
+      model: "gpt-4o",
       stream: true,
       max_tokens: 4096,
       temperature: 0,
       messages: [
         {
-          role: 'system',
+          role: "system",
           content: SYSTEM_PROMPT,
         },
         {
-          role: 'user',
+          role: "user",
           content: [
             {
-              type: 'text',
+              type: "text",
               text: USER_PROMPT,
             },
             {
-              type: 'image_url',
-              image_url: { url: imageUrl, detail: 'high' },
+              type: "image_url",
+              image_url: { url: imageUrl, detail: "high" },
             },
           ],
         },
@@ -137,9 +134,9 @@ export async function POST(req: Request) {
      */
     freeTrialFromDB && (await updateFreeTrial({ freeTrialFromDB }));
 
-    logger.info('¡Se ha generado un nuevo componente!', {
-      service: 'generate',
-      user: uid || 'anonymous',
+    logger.info("¡Se ha generado un nuevo componente!", {
+      service: "generate",
+      user: uid || "anonymous",
     });
     return new StreamingTextResponse(stream);
   } catch (error) {
