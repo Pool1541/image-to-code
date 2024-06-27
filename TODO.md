@@ -33,7 +33,7 @@
 - [ ] El usuario debe poder crear componentes sin necesidad de ingresar con una cuenta.
 - [ ] Se debe agregar un límite de uso por usuario no autenticado
 - [ ] El límite de uso debe ser aplicado a la ip del usuario.
-- [ ] Se debe limitar el uso a 5 solicitudes en 24 horas para usuarios no autenticados y 15 solicitudes en 24 horas para usuarios autenticados.
+- [ ] Se debe limitar el uso a 3 solicitudes en 24 horas para usuarios no autenticados y 10 solicitudes en 24 horas para usuarios autenticados.
 
 ## Historial de componentes
 
