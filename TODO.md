@@ -42,18 +42,24 @@
 - [ ] Los usuarios autenticados deben poder ver sus componentes guardados, tanto públicos como privados.
 - [ ] Los componentes guardados deberían poder ser púbicos o privados. Por defectos son públicos.
 - [ ] Los componentes guardados pueden ser eliminados mediante un soft delete.
+- [ ] Debe haber una tabla ```records``` la siguiente información: 
+  - id de usuario
+  - fecha de creación
+  - fecha de modificación
+  - cantidad de componentes
 - [ ] Los componentes guardados deben contar con la siguiente información: 
   - fecha de creación
   - fecha de modificación
-  - user_id
+  - id de registro
   - titulo
   - descripción (opcional)
   - vista previa
-  - codigo_id
+  - stack de tecnologías
+  - id de componente
   - eliminado (booleano)
   - público (booleano)
-  - visitas
-  - usos (cuando un usuario le da al botón ```copiar``` del componente)
+  - cantidad de visitas
+  - cantidad de usos (cuando un usuario le da al botón ```copiar``` del componente)
 - [ ] Se debe crear la entidad like con la siguiente información:
   - fecha de creación
   - user_id
