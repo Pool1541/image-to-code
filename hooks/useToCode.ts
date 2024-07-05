@@ -7,6 +7,7 @@ import { STEPS } from '@/constants/steps';
 import { useSession } from 'next-auth/react';
 import useConfig from './useConfig';
 import ToastError from '@/components/home/toast-error';
+import { API_ERRORS } from '@/lib/api-errors';
 
 export function useToCode() {
   const [completed, setCompleted] = useState(false);
@@ -51,7 +52,7 @@ export function useToCode() {
       setCompleted(true);
     } catch (error) {
       if (error instanceof Error)
-        toast.error(ToastError({ message: error.message }), { duration: 7000 });
+        toast.error(ToastError({ message: API_ERRORS[error.message] || error.message }), { duration: 7000 });
     }
   }
 

@@ -90,7 +90,7 @@ export async function POST(req: NextRequest) {
   const ip = req.ip ?? req.headers.get("X-Forwarded-For") ?? "unknown";
   const isRateLimited = limit(ip, Boolean(uid));
 
-  if (isRateLimited) return NextResponse.json({ error: "Too much request" }, { status: 429 });
+  if (isRateLimited) return NextResponse.json({ message: "Too much request" }, { status: 429 });
 
   const SYSTEM_PROMPT = stack === Output.html_tailwind ? HTML_SYSTEM_PROMPT : REACT_SYSTEM_PROMPT;
   const imageUrl = url ?? img;
